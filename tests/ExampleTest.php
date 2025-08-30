@@ -69,6 +69,13 @@ class ExampleTest extends TestCase
             'index.php',
             'profile.php',
             'logout.php',
+            'ajax_handlers.php',
+            'budgets_actions.php',
+            'collections_action.php',
+            'db.php',
+            'expense_functions.php',
+            'expense_handler.php',
+            
             // 'dashboard.php',
             // 'profile.php',
             // 'logout.php',
@@ -119,4 +126,5 @@ class ExampleTest extends TestCase
         $this->assertGreaterThan(0, $count, 'Project should have at least one PHP file');
     }
 }
+
 
