@@ -75,7 +75,21 @@ class ExampleTest extends TestCase
             'db.php',
             'expense_functions.php',
             'expense_handler.php',
-            
+            'financial_budgeting_modals.php',
+            'financial_budgeting.php',
+            'financial_collections_modals.php',
+            'financial_collections.php',
+            'financial_expense_modals.php',
+            'financial_expense.php',
+            'financial_ledger_modals.php',
+            'financial_ledger.php',
+            'financial_reporting_modals.php',
+            'financial_reporting.php',
+            'financial_settings.php',
+            'ledger_functions.php',
+            'reporting_handler.php',
+            'sidebar_navbar.php',
+            'user_management.php',
             // 'dashboard.php',
             // 'profile.php',
             // 'logout.php',
@@ -126,5 +140,6 @@ class ExampleTest extends TestCase
         $this->assertGreaterThan(0, $count, 'Project should have at least one PHP file');
     }
 }
+
 
 
