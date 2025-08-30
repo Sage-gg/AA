@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-class AllPHPFilesTest extends TestCase
+class ExampleTest extends TestCase
 {
     /**
      * Get all PHP files in the project
@@ -119,3 +119,4 @@ class AllPHPFilesTest extends TestCase
         $this->assertGreaterThan(0, $count, 'Project should have at least one PHP file');
     }
 }
+
