@@ -2,99 +2,120 @@
 
 use PHPUnit\Framework\TestCase;
 
-class ExampleTest extends TestCase
+class AllPHPFilesTest extends TestCase
 {
     /**
-     * Test that login.php file exists and loads without errors
+     * Get all PHP files in the project
      */
-    public function testLoginFileExists(): void
+    private function getAllPHPFiles(): array
     {
-        $this->assertFileExists('login.php');
+        $files = [];
         
-        ob_start();
-        include 'login.php';
-        $output = ob_get_clean();
+        // Root directory PHP files
+        $files = array_merge($files, glob('*.php'));
         
-        $this->assertNotEmpty($output);
+        // Include subdirectories (optional)
+        // $files = array_merge($files, glob('*/*.php'));
+        // $files = array_merge($files, glob('**/*.php'));
+        
+        return $files;
     }
 
     /**
-     * Test that index.php file exists and loads without errors
+     * Test that all PHP files have valid syntax
      */
-    public function testIndexFileExists(): void
+    public function testAllPHPFilesHaveValidSyntax(): void
     {
-        $this->assertFileExists('index.php');
+        $phpFiles = $this->getAllPHPFiles();
         
-        ob_start();
-        include 'index.php';
-        $output = ob_get_clean();
+        $this->assertNotEmpty($phpFiles, 'No PHP files found in project');
         
-        $this->assertNotEmpty($output);
+        foreach ($phpFiles as $file) {
+            // Check syntax without executing
+            $output = shell_exec("php -l $file 2>&1");
+            $this->assertStringContains('No syntax errors', $output, "Syntax error in $file: $output");
+        }
     }
 
     /**
-     * Test that login.php contains some form of HTML
+     * Test that all PHP files can be included
      */
-    public function testLoginHasHTML(): void
+    public function testAllPHPFilesCanBeIncluded(): void
     {
-        ob_start();
-        include 'login.php';
-        $output = ob_get_clean();
+        $phpFiles = $this->getAllPHPFiles();
+        $errors = [];
         
-        // Check if it has basic HTML structure
-        $this->assertTrue(
-            strpos($output, '<html') !== false || 
-            strpos($output, '<form') !== false ||
-            strpos($output, '<!DOCTYPE') !== false,
-            'Login page should contain HTML content'
-        );
+        foreach ($phpFiles as $file) {
+            try {
+                ob_start();
+                include_once $file;
+                ob_end_clean();
+            } catch (Throwable $e) {
+                ob_end_clean();
+                $errors[] = "File $file: " . $e->getMessage();
+            }
+        }
+        
+        $this->assertEmpty($errors, "Errors found in files:\n" . implode("\n", $errors));
     }
 
     /**
-     * Test that index.php contains some form of HTML
+     * Test specific files you know should exist
      */
-    public function testIndexHasHTML(): void
+    public function testRequiredFilesExist(): void
     {
-        ob_start();
-        include 'index.php';
-        $output = ob_get_clean();
-        
-        // Check if it has basic HTML structure
-        $this->assertTrue(
-            strpos($output, '<html') !== false || 
-            strpos($output, '<body') !== false ||
-            strpos($output, '<!DOCTYPE') !== false,
-            'Index page should contain HTML content'
-        );
+        $requiredFiles = [
+            'login.php',
+            'index.php',
+            'profile.php',
+            'logout.php',
+            // 'dashboard.php',
+            // 'profile.php',
+            // 'logout.php',
+        ];
+
+        foreach ($requiredFiles as $file) {
+            $this->assertFileExists($file, "Required file '$file' is missing");
+        }
     }
 
     /**
-     * Test basic PHP functionality
+     * Test that HTML files contain basic structure
      */
-    public function testBasicPHPWorks(): void
+    public function testHTMLStructure(): void
     {
-        $this->assertTrue(true);
-        $this->assertEquals(4, 2 + 2);
-        $this->assertIsString("hello");
-        $this->assertIsArray([1, 2, 3]);
+        $htmlFiles = $this->getAllPHPFiles();
+        
+        foreach ($htmlFiles as $file) {
+            ob_start();
+            include $file;
+            $output = ob_get_clean();
+            
+            if (!empty($output)) {
+                $this->assertTrue(
+                    strpos($output, '<html') !== false || 
+                    strpos($output, '<!DOCTYPE') !== false ||
+                    strpos($output, '<form') !== false ||
+                    strpos($output, '<div') !== false,
+                    "File $file should contain HTML structure"
+                );
+            }
+        }
     }
 
     /**
-     * Test that files don't have syntax errors by including them
+     * Count total PHP files in project
      */
-    public function testFilesHaveNoSyntaxErrors(): void
+    public function testProjectHasPHPFiles(): void
     {
-        // If these includes fail, the test will fail
-        $this->assertTrue(true); // This will pass if no syntax errors occur
+        $phpFiles = $this->getAllPHPFiles();
+        $count = count($phpFiles);
         
-        ob_start();
-        include 'login.php';
-        ob_end_clean();
+        echo "\nFound $count PHP files in project:\n";
+        foreach ($phpFiles as $file) {
+            echo "- $file\n";
+        }
         
-        ob_start();
-        include 'index.php';
-        ob_end_clean();
-        
-        $this->assertTrue(true);
+        $this->assertGreaterThan(0, $count, 'Project should have at least one PHP file');
     }
 }
